@@ -10,7 +10,7 @@
 
 int targetType = DISPLAYSCREEN; //PRINTBOARD; DISPLAYSCREEN
 char baseDir[1000] = OCR_DIR_PATH;
-int knn_min_distance = 250;
+int knn_min_distance = 270;
 //set color filter thres
 int color_filter_slider = 120;
 

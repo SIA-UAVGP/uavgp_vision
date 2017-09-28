@@ -76,11 +76,11 @@ DisplayScreenProcessType::DisplayScreenProcessType( )
 {
     imgNo = 0;
     shrink = 0.8;
-    rect_filter_two_side_ratio_max = 0.9;   ////0.9
+    rect_filter_two_side_ratio_max = 1.0;   ////0.9
     rect_filter_two_side_ratio_min = 0.25;   ////0.2
     min_bounding_rect_height_ratio = 0.1;  ////0.1
     min_precision_ratio_thres = 80.0;    ////80
-    min_knn_distance_thres = 250;
+    min_knn_distance_thres = 260;
     return;
 }
 
@@ -582,8 +582,8 @@ void DisplayScreenProcessType::DigitSort(Mat& input_img, vector<RoiAreaInfo>& ro
             int y_i = roiAreaInfos[i].minBoundingRect.y + roiAreaInfos[i].minBoundingRect.height/2;
             int x_j = roiAreaInfos[j].minBoundingRect.x + roiAreaInfos[j].minBoundingRect.width/2;
             int y_j = roiAreaInfos[j].minBoundingRect.y + roiAreaInfos[j].minBoundingRect.height/2;
-            float dis_c_i = sqrt(pow(x_i - input_img.cols/2,2) + pow(y_i - input_img.rows*3.0/5.0,2));
-            float dis_c_j = sqrt(pow(x_j - input_img.cols/2,2) + pow(y_j - input_img.rows*3.0/5.0,2));
+            float dis_c_i = sqrt(pow(x_i - input_img.cols/2,2) + pow(y_i - input_img.rows*0.5,2));
+            float dis_c_j = sqrt(pow(x_j - input_img.cols/2,2) + pow(y_j - input_img.rows*0.5,2));
             if (dis_c_i > dis_c_j)
             {
                 swap(roiAreaInfos[i],roiAreaInfos[j]);
