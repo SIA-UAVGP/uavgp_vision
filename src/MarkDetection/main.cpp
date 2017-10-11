@@ -8,7 +8,7 @@
 #include "project_path_config.h"
 #include <std_msgs/Int32.h>
 
-int targetType = DISPLAYSCREEN; //PRINTBOARD; DISPLAYSCREEN
+int targetType = PRINTBOARD; //PRINTBOARD; DISPLAYSCREEN
 char baseDir[1000] = OCR_DIR_PATH;
 int knn_min_distance = 270;
 //set color filter thres
@@ -921,7 +921,7 @@ void DigitResultPublish(vector<VisionResult>& visionResult )
 
     if (visionResult.size() < 1)
     {
-        digits_position.ranges.resize(4);
+        digits_position.ranges.resize(5);
         digits_position.header.frame_id = "digits_position";
         digits_position.header.stamp    = ros::Time::now();
         int i = 0;
@@ -929,10 +929,11 @@ void DigitResultPublish(vector<VisionResult>& visionResult )
         digits_position.ranges[i*4 + 1] = float(-1);
         digits_position.ranges[i*4 + 2] = float(-1);
         digits_position.ranges[i*4 + 3] = float(-1);
+        digits_position.ranges[i*4 + 4] = float(-1);
     }
     else
     {
-        digits_position.ranges.resize(visionResult.size()*4);
+        digits_position.ranges.resize(visionResult.size()*5);
         digits_position.header.frame_id = "digits_position";
         digits_position.header.stamp    = ros::Time::now();
         for ( int i = 0; i < (int)visionResult.size(); ++i )
@@ -941,6 +942,7 @@ void DigitResultPublish(vector<VisionResult>& visionResult )
             digits_position.ranges[i*4 + 1] = float(visionResult[i].negPos3D.y);
             digits_position.ranges[i*4 + 2] = float(visionResult[i].negPos3D.x);
             digits_position.ranges[i*4 + 3] = float(-visionResult[i].negPos3D.z);
+            digits_position.ranges[i*4 + 4] = float(visionResult[i].accuracy_level);
         }
     }
     vision_digit_position_publisher.publish(digits_position);

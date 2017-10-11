@@ -10,6 +10,37 @@ static double distance_x = 0.695;
 static double distance_y = 0;
 static double distance_z = 0.15;
 
+// zero is the lowest level, and 1 is the highest, the larger the lower level
+static int accuracy_matrix[5][16] = 
+    {1,1,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
+    1,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+    2,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+    4,4,4,5,6,7,8,9,10,11,12,13,14,15,16,17,
+    6,6,6,6,7,8,9,10,11,12,13,14,15,16,17,18};
+
+int GetTargetAccuracyLevel(Point3f cameraPos3D)
+{
+    float effective_distance[2] = {0.75f,4.75f};
+    float dist_divided_num = 16.0f;
+    float effective_angle = 36.0f;
+    float angle_divided_num = 5.0f;
+    int level = 0;
+    
+    float angle = atanf(sqrtf(cameraPos3D.x*cameraPos3D.x + cameraPos3D.y*cameraPos3D.y)/cameraPos3D.z)
+                  *180.0f/3.14159f;
+    
+    float x = angle / effective_angle * angle_divided_num;
+    float y = (cameraPos3D.z - effective_distance[0])/ (effective_distance[1] - effective_distance[0]) * dist_divided_num;
+
+    if (x > 0.0f && x < angle_divided_num && y > 0.0f && y < dist_divided_num){
+        level = accuracy_matrix[int(x)][int(y)];
+    } else {
+        level = 0; 
+    }
+    // printf("x = %4.2f, y = %4.2f, level = %d \n", x, y, level);
+    return level;
+}
+
 void CameraCoordinate2NegCoordinate( vector<VisionResult>& vision_results, const Attitude3D& attitude3d)
 {
     double port_attitude_roll  = (double)attitude3d.roll;
@@ -42,6 +73,9 @@ void CameraCoordinate2NegCoordinate( vector<VisionResult>& vision_results, const
         vision_results[i].negPos3D.x = uav_neg_x;
         vision_results[i].negPos3D.y = uav_neg_y;
         vision_results[i].negPos3D.z = uav_neg_z;
+        vision_results[i].accuracy_level = GetTargetAccuracyLevel(vision_results[i].cameraPos3D);
+        ROS_INFO("Num: %d; Location: %4.2f, %4.2f, %4.2f; Accuracy: %d",
+                vision_results[i].digitNo, cam_x, cam_y, cam_z, vision_results[i].accuracy_level);
     }
     return;
 }

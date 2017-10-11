@@ -585,7 +585,7 @@ int RunSingleCamera( PGRGuid guid )
         cam_info.header.stamp    = ros::Time::now();
         cam_info.ranges[0] = shutter_time;
         camera_info_pub.publish(cam_info);
-        printf("shutter time: %f\n", shutter_time);
+        // printf("shutter time: %f\n", shutter_time);
 
         resize(img, img, Size(640,480));
         imshow("CameraCapture",img);

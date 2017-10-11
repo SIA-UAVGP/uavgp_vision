@@ -100,6 +100,7 @@ public:
     }
     int frameNo;
     int digitNo;
+    int accuracy_level;
     Point2f imagePos2D;
     Point3f cameraPos3D;
     Point3d negPos3D;
