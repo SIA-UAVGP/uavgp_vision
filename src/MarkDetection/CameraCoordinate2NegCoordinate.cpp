@@ -12,15 +12,15 @@ static double distance_z = 0.15;
 
 // zero is the lowest level, and 1 is the highest, the larger the lower level
 static int accuracy_matrix[5][16] = 
-    {1,1,2,2,3,4,5,6,7,8,9,10,11,12,13,14,
-    2,2,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+    {1,1,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
+    1,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
     3,3,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
     4,4,4,5,6,7,8,9,10,11,12,13,14,15,16,17,
     6,6,6,6,7,8,9,10,11,12,13,14,15,16,17,18};
 
 int GetTargetAccuracyLevel(Point3f cameraPos3D)
 {
-    float effective_distance[2] = {1.5f,5.5f};
+    float effective_distance[2] = {1.4f,5.4f};
     float dist_divided_num = 16.0f;
     float effective_angle = 36.0f;
     float angle_divided_num = 5.0f;
@@ -74,7 +74,7 @@ void CameraCoordinate2NegCoordinate( vector<VisionResult>& vision_results, const
         vision_results[i].negPos3D.y = uav_neg_y;
         vision_results[i].negPos3D.z = uav_neg_z;
         vision_results[i].accuracy_level = GetTargetAccuracyLevel(vision_results[i].cameraPos3D);
-        ROS_INFO("Num: %d; Location: %8.4f, %8.4f, %8.4f; Accuracy: %d",
+        ROS_INFO("Num: %d; Pos: %6.3f, %6.3f, %6.3f; Level: %d",
                 vision_results[i].digitNo, cam_x, cam_y, cam_z, vision_results[i].accuracy_level);
     }
     return;
