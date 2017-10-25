@@ -11,19 +11,28 @@ static double distance_y = 0;
 static double distance_z = 0.15;
 
 // zero is the lowest level, and 1 is the highest, the larger the lower level
-static int accuracy_matrix[5][16] = 
+static int accuracy_matrix[6][16] = 
     {1,1,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
+    1,1,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
     1,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
-    3,3,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-    4,4,4,5,6,7,8,9,10,11,12,13,14,15,16,17,
-    6,6,6,6,7,8,9,10,11,12,13,14,15,16,17,18};
+    2,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,
+    4,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,
+    6,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+
+// static int accuracy_matrix[6][16] = 
+//         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};                                              
 
 int GetTargetAccuracyLevel(Point3f cameraPos3D)
 {
     float effective_distance[2] = {1.4f,5.4f};
     float dist_divided_num = 16.0f;
-    float effective_angle = 36.0f;
-    float angle_divided_num = 5.0f;
+    float effective_angle = 30.0f;
+    float angle_divided_num = 6.0f;
     int level = 0;
     
     float angle = atanf(sqrtf(cameraPos3D.x*cameraPos3D.x + cameraPos3D.y*cameraPos3D.y)/cameraPos3D.z)
