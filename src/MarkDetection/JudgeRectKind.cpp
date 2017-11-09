@@ -135,8 +135,6 @@ int RectKind(  Mat& inputImg, Mat& outputImg, vector< Rect>& minBoundingRect  )
 {
     int kind = -1;
     double rectOutside_rectInside_pixelValue = GetPixelAverageValueBetweenTwoRect( inputImg, outputImg, minBoundingRect[0], minBoundingRect[1]);
-    //printf("rectOutside_rectInside_pixelValue = %f\n", rectOutside_rectInside_pixelValue);
-
     //该矩形为第二种情况，检测到的是中间矩形
     if (rectOutside_rectInside_pixelValue > 100 && minBoundingRect.size() >=3)
     {
@@ -144,7 +142,7 @@ int RectKind(  Mat& inputImg, Mat& outputImg, vector< Rect>& minBoundingRect  )
         //认为是全黑的黑框
         rectangle(outputImg, minBoundingRect[0], Scalar(0,0,0), 4, 8);
         rectangle(outputImg, minBoundingRect[1], Scalar(0,0,0), 4, 8);
-    }
+    } 
     //矩形为第一、第三种情况
     else if (rectOutside_rectInside_pixelValue < 50 )
     {
@@ -154,7 +152,7 @@ int RectKind(  Mat& inputImg, Mat& outputImg, vector< Rect>& minBoundingRect  )
         //如果只有两个外包矩形，肯定是第一种情况, 最内侧矩形
         if (minBoundingRect.size() <= 2)
         {
-            kind = 0;
+            kind = 0;            
         }
         else if (3 == minBoundingRect.size() )
         {
@@ -180,7 +178,15 @@ int RectKind(  Mat& inputImg, Mat& outputImg, vector< Rect>& minBoundingRect  )
                 }
             }
         }
+    } /*else if (minBoundingRect.size() ==2){
+        kind = 0;
+        printf("3 = %f | %d\n", rectOutside_rectInside_pixelValue,minBoundingRect.size());
+    }else if (minBoundingRect.size() >=3){
+        kind = 1;
+        printf("4 = %f | %d\n", rectOutside_rectInside_pixelValue,minBoundingRect.size());
     }
+    printf("5 = %f | %d\n", rectOutside_rectInside_pixelValue,minBoundingRect.size());
+    */
     return kind;
 }
 

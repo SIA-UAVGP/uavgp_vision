@@ -10,7 +10,7 @@
 
 int targetType = DISPLAYSCREEN; //PRINTBOARD; DISPLAYSCREEN
 char baseDir[1000] = OCR_DIR_PATH;
-int knn_min_distance = 270;
+int knn_min_distance = 300;
 //set color filter thres
 int color_filter_slider = 120;
 
@@ -304,8 +304,15 @@ void RectangleDetect( Mat& lightness_img, Mat& resultImg, vector< vector<RectMar
 
     Mat imgBinaryShow;
     resize(imgBinary, imgBinaryShow, Size(1384*0.5,1032*0.5),0,0,INTER_AREA);
-    //imshow("adaptiveThresholdImg",imgBinaryShow);
-    //printf("imshow imgBinaryShow done!\n");
+    // imshow("adaptiveThresholdImg",imgBinaryShow);
+    // Mat element1=getStructuringElement(MORPH_RECT, Size(2,2));
+   
+    // erode(imgBinary, imgBinary, element1);
+    // imshow("11", imgBinary);
+    // dilate(imgBinary, imgBinary, element1);
+    // imshow("12", imgBinary);
+
+    // printf("imshow imgBinaryShow done!\n");
 
     vector<Vec4i> hierarchy;
     vector< vector<Point> > all_contours;
@@ -749,13 +756,27 @@ void DigitDetector(Mat& ResultImg, basicOCR* ocr, vector< vector<RectMark> >& re
         if (!possibleDigitBinaryImg.data)
             continue;
 
+        // ROS_INFO("11111");
+        //数字识别
+        Mat element1=getStructuringElement(MORPH_RECT, Size(8,8));
+        Mat element2=getStructuringElement(MORPH_RECT, Size(4,4));
+        // Mat element3=getStructuringElement(MORPH_RECT, Size(6,6));
+        imshow("0", possibleDigitBinaryImg);
+
         if (rectCategory[i][0].position.z < 3)
         {
             medianBlur(possibleDigitBinaryImg,possibleDigitBinaryImg,3);
-            //imshow("median_img", possibleDigitBinaryImg);
+            // imshow("median_img", possibleDigitBinaryImg);
         }
+        dilate(possibleDigitBinaryImg, possibleDigitBinaryImg, element1);
+        // imshow("1", possibleDigitBinaryImg);
+        dilate(possibleDigitBinaryImg, possibleDigitBinaryImg, element2);
+        // imshow("2", possibleDigitBinaryImg);
+        erode(possibleDigitBinaryImg, possibleDigitBinaryImg, element2);
+        // imshow("3", possibleDigitBinaryImg);
+        erode(possibleDigitBinaryImg, possibleDigitBinaryImg, element1);
+        imshow("4", possibleDigitBinaryImg);
 
-        //数字识别
         IplImage ipl_img(possibleDigitBinaryImg);
         float classResult = ocr->classify(&ipl_img,1);
         float precisionRatio = ocr->knn_result.precisionRatio;
