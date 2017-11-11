@@ -8,7 +8,7 @@
 #include "project_path_config.h"
 #include <std_msgs/Int32.h>
 
-int targetType = DISPLAYSCREEN; //PRINTBOARD; DISPLAYSCREEN
+int targetType = PRINTBOARD; //PRINTBOARD; DISPLAYSCREEN
 char baseDir[1000] = OCR_DIR_PATH;
 int knn_min_distance = 300;
 //set color filter thres
@@ -756,10 +756,9 @@ void DigitDetector(Mat& ResultImg, basicOCR* ocr, vector< vector<RectMark> >& re
         if (!possibleDigitBinaryImg.data)
             continue;
 
-        // ROS_INFO("11111");
         //数字识别
         Mat element1=getStructuringElement(MORPH_RECT, Size(8,8));
-        Mat element2=getStructuringElement(MORPH_RECT, Size(4,4));
+        // Mat element2=getStructuringElement(MORPH_RECT, Size(4,4));
         // Mat element3=getStructuringElement(MORPH_RECT, Size(6,6));
         imshow("0", possibleDigitBinaryImg);
 
@@ -770,9 +769,9 @@ void DigitDetector(Mat& ResultImg, basicOCR* ocr, vector< vector<RectMark> >& re
         }
         dilate(possibleDigitBinaryImg, possibleDigitBinaryImg, element1);
         // imshow("1", possibleDigitBinaryImg);
-        dilate(possibleDigitBinaryImg, possibleDigitBinaryImg, element2);
+        // dilate(possibleDigitBinaryImg, possibleDigitBinaryImg, element2);
         // imshow("2", possibleDigitBinaryImg);
-        erode(possibleDigitBinaryImg, possibleDigitBinaryImg, element2);
+        // erode(possibleDigitBinaryImg, possibleDigitBinaryImg, element2);
         // imshow("3", possibleDigitBinaryImg);
         erode(possibleDigitBinaryImg, possibleDigitBinaryImg, element1);
         imshow("4", possibleDigitBinaryImg);

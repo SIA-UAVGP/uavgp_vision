@@ -78,7 +78,9 @@ void GetRectKinds( vector< vector<RectMark> >&  rectCategory )
             {
                 if ( minBoundingRectTemp.height < img.rows*0.9 )
                 {
-                    minBoundingRect.push_back(minBoundingRectTemp);
+                    if ((double)(minBoundingRectTemp.height) / (double)(minBoundingRectTemp.width ) < 2.5) {
+                        minBoundingRect.push_back(minBoundingRectTemp);
+                    }
                 }
             }
         }
@@ -102,7 +104,7 @@ void GetRectKinds( vector< vector<RectMark> >&  rectCategory )
         int rectKind = RectKind( imgBinary, showImg, minBoundingRect );
         GetDigitRoiImg( imgBinary, minBoundingRect, rectKind,  rectCategory[i] );
 
-        //imshow("minRect", showImg);
+        // imshow("minRect", showImg);
     }
     return;
 }
@@ -178,15 +180,24 @@ int RectKind(  Mat& inputImg, Mat& outputImg, vector< Rect>& minBoundingRect  )
                 }
             }
         }
-    } /*else if (minBoundingRect.size() ==2){
-        kind = 0;
-        printf("3 = %f | %d\n", rectOutside_rectInside_pixelValue,minBoundingRect.size());
-    }else if (minBoundingRect.size() >=3){
-        kind = 1;
-        printf("4 = %f | %d\n", rectOutside_rectInside_pixelValue,minBoundingRect.size());
+    } else {
+        for (int i = 0;i < minBoundingRect.size();i++) {
+            static double radio0 = 1.33;
+            static double radio1 = 1.25;
+            static double radio2 = 1.167;
+            static double range = 0.025;
+
+            double radio = (double)(minBoundingRect[i].height)/(double)(minBoundingRect[i].width);
+            if (fabs(radio - radio0) < range) {
+                kind = 3 + i*10; break;
+            } else if (fabs(radio - radio1) < range) {
+                kind = 4 + i*10; break;
+            } else if (fabs(radio - radio2) < range) {
+                kind = 5 + i*10; break;
+            }
+        }
     }
-    printf("5 = %f | %d\n", rectOutside_rectInside_pixelValue,minBoundingRect.size());
-    */
+
     return kind;
 }
 
@@ -195,53 +206,80 @@ void GetDigitRoiImg( Mat& binaryImg, vector< Rect>& minBoundingRect, int rectKin
 {
 
     Mat img;
-     Rect roi;
+    Rect roi;
 
     if ( -1 == rectKind)
     {
+        ROS_INFO("--------------");
         return;
      }
-    if ( 0 == rectKind)
-    {
-        roi = minBoundingRect[1];
-     }
-    if ( 1 == rectKind)
-    {
-        roi = minBoundingRect[2];
-     }
-    if ( 2 == rectKind)
-    {
-        roi = minBoundingRect[3];
-     }
 
-        //roi区域扩大1.1倍
-        Point middlePoint = Point(roi.x + roi.width/2, roi.y + roi.height/2);
-        roi.height = roi.height * 1.15;  //1.1
-        roi.width = roi.height * 2.7/4;
-        roi.x = middlePoint.x - roi.width/2 * 1.0;
-        roi.y = middlePoint.y - roi.height/2;
+    if (rectKind > 2) {
+        int kind = rectKind % 10;
+        int Num = int(rectKind / 10);
+        roi = minBoundingRect[Num];
+        if (kind == 3) {
+            rectKind = 0;
+        } else if (kind == 4) {
+            rectKind = 1;
+            Point middlePoint = Point(roi.x + roi.width/2, roi.y + roi.height/2);
+            roi.height = roi.height * 4.0/5.0;
+            roi.width = roi.height * 3.0/4.0;
+            roi.x = middlePoint.x - roi.width/2 * 1.0;
+            roi.y = middlePoint.y - roi.height/2;
+        } else if (kind == 5) {
+            rectKind = 2;
+            Point middlePoint = Point(roi.x + roi.width/2, roi.y + roi.height/2);
+            roi.height = roi.height * 4.0/7.0;
+            roi.width = roi.height * 3.0/4.0;
+            roi.x = middlePoint.x - roi.width/2 * 1.0;
+            roi.y = middlePoint.y - roi.height/2;
+        }
 
-        if ( roi.x <= 0 )
-            roi.x = 0;
-        if ( roi.y <= 0 )
-            roi.y = 0;
-        if ( roi.x + roi.width >= binaryImg.cols )
-            roi.width =  binaryImg.cols - roi.x;
-        if ( roi.y + roi.height >= binaryImg.rows )
-            roi.height = binaryImg.rows - roi.y;
+    } else {
 
-        //二值化翻转
-        binaryImg( roi ).copyTo(img);
-        //imshow( "roi", img );
-        threshold(img, img, 125, 255, THRESH_BINARY_INV);
+        if ( 0 == rectKind)
+        {
+            roi = minBoundingRect[1];
+        }
+        if ( 1 == rectKind)
+        {
+            roi = minBoundingRect[2];
+        }
+        if ( 2 == rectKind)
+        {
+            roi = minBoundingRect[3];
+        }
 
-        resize(img, img, Size(128,128));
-        Mat element=getStructuringElement(MORPH_ELLIPSE, Size(7,7));
-        erode( img, img, element);
-        rectCategory_i[0].possibleDigitBinaryImg = img.clone();
-        rectCategory_i[0].rectKind = rectKind;
+            //roi区域扩大1.1倍
+            Point middlePoint = Point(roi.x + roi.width/2, roi.y + roi.height/2);
+            roi.height = roi.height * 1.15;  //1.1
+            roi.width = roi.height * 2.7/4;
+            roi.x = middlePoint.x - roi.width/2 * 1.0;
+            roi.y = middlePoint.y - roi.height/2;
+    }
 
-        //imshow("digitROI", img);
+    if ( roi.x <= 0 )
+        roi.x = 0;
+    if ( roi.y <= 0 )
+        roi.y = 0;
+    if ( roi.x + roi.width >= binaryImg.cols )
+        roi.width =  binaryImg.cols - roi.x;
+    if ( roi.y + roi.height >= binaryImg.rows )
+        roi.height = binaryImg.rows - roi.y;
+
+    //二值化翻转
+    binaryImg( roi ).copyTo(img);
+    // imshow( "roi", img );
+    threshold(img, img, 125, 255, THRESH_BINARY_INV);
+
+    resize(img, img, Size(128,128));
+    // Mat element=getStructuringElement(MORPH_ELLIPSE, Size(7,7));
+    // erode( img, img, element);
+    rectCategory_i[0].possibleDigitBinaryImg = img.clone();
+    rectCategory_i[0].rectKind = rectKind;
+    ROS_INFO("=============");
+    imshow("digitROI", img);
     return;
 }
 
