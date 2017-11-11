@@ -74,7 +74,9 @@ void GetRectKinds( vector< vector<RectMark> >&  rectCategory )
             //只存储中心点在图像中心的矩形
             Point2d minBoundingRectMiddlePoint = Point2d( minBoundingRectTemp.x + minBoundingRectTemp.width*0.5, minBoundingRectTemp.y + minBoundingRectTemp.height*0.5 );
             double err = sqrt( pow(minBoundingRectMiddlePoint.x - img.cols*0.5, 2) + pow(minBoundingRectMiddlePoint.y - img.rows*0.5, 2) );
-            if ( err < img.cols*0.06)
+            // ROS_INFO("err:%8.4f,cols:%8.4f",err,img.cols*0.09);
+
+            if ( err < img.cols*0.09)
             {
                 if ( minBoundingRectTemp.height < img.rows*0.9 )
                 {
